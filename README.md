@@ -12,14 +12,14 @@ An additional SPAR script assigns Restriction Fragment Length Polymorphism (RFLP
 
 OS X & Linux:
 
-Install [Python3][python3]
-Install necessary python packages:
+Install [Python3][python3]<br />
+Install necessary python packages:<br />
 ```sh
 pip freeze > requirements.txt
 ```
-Install [MAFFT][mafft] (version >= 7.310) dependency
-Install [BLAST][blast] (version >= 2.10.0+) dependency
-Install [HMMER3][hmmer3] (release >= 3.1b2) dependency
+Install [MAFFT][mafft] (version >= 7.310) dependency<br />
+Install [BLAST][blast] (version >= 2.10.0+) dependency<br />
+Install [HMMER3][hmmer3] (release >= 3.1b2) dependency<br />
 
 Manually modify sequence_annotate.py
 1) Open bash command line terminal
@@ -32,8 +32,8 @@ Manually modify sequence_annotate.py
 ```sh
 python3 sequence_annotate.py in > out
 ```
-**OPTIONAL ARGUMENTS**
--h or -help
+**OPTIONAL ARGUMENTS**<br />
+<pre>-h or -help
   Print USAGE, DESCRIPTION and ARGUMENTS
 -organism=<Organisms>
   List (comma delimited) possible organism identity of sequences in input fasta
@@ -42,7 +42,7 @@ python3 sequence_annotate.py in > out
 -out=<Output_File>
   Output file name
 -out\_format=<Output_Format>
-  Output file format (gff3)
+  Output file format (gff3)</pre>
   
 **Note:** The *-organism* argument is used to specify the possible species identity for any sequence within the input FASTA file. Identification is based solely on BLAST similarity score. Valid organism options include Classical swine fever virus (CSFV), Foot-and-mouth disease virus (FMDV), Porcine deltacoronavirus (PDCoV), Porcine epidemic diarrhea virus (PEDV), PRRSV1, PRRSV2, and Senecavirus A (SVA). Currently, annotating is limited to single-stranded RNA viruses.
 
@@ -51,24 +51,24 @@ Additional pathogens may be added by creating a pathway under the requirements d
 ```sh
 python3 prrsv_orf5_RFLP.py in > out
 ```
-**OPTIONAL ARGUMENTS**
--h or -help
+**OPTIONAL ARGUMENTS**<br />
+<pre>-h or -help
   Print USAGE, DESCRIPTION and ARGUMENTS
 -in=<Input_File>
   Input file name
 -out=<Output_File>
   Output file name
 -require_full=<Bool>
-  Only assign RFLP pattern to input sequences that are complete (default=True)
+  Only assign RFLP pattern to input sequences that are complete (default=True)</pre>
   
 **Note:** Output file format will consist of the input FASTA file contents with RFLP pattern values appended at the end of each header, separated by a forward slash ("/") delimiter. If a sequence is not identified as being type 2 PRRSV, "na" will be appended. If a sequence does not contain a complete ORF5 gene, "null" will be appended. RFLP determination is only performed on complete genes be default. Use caution when enabling RFLP assignment to partial ORF5 sequences. Restriction sites cannot be inferred from missing residues.
 
 
 ## Contact information
 
-Please contact the developer with any comments, concerns, or questions. 
-blake.inderski@usda.gov
-Alternatively, post an issue in this GitHub repository for assistance.
+Please contact the developer with any comments, concerns, or questions.<br />
+blake.inderski@usda.gov<br />
+Alternatively, post an issue in this GitHub repository for assistance.<br />
 
 [python3]: https://docs.python-guide.org/starting/install3/linux/
 [mafft]: https://mafft.cbrc.jp/alignment/software/
