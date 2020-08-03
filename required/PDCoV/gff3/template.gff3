@@ -1,0 +1,17 @@
+##gff-version 3
+sample	.	gene	start	end	.	+	.	ID=E-gene;ID=E;gene=E
+sample	.	gene	start	end	.	+	.	ID=M-gene;ID=M;gene=M
+sample	.	gene	start	end	.	+	.	ID=N-gene;ID=N;gene=N
+sample	.	gene	start	end	.	+	.	ID=NS6-gene;ID=NS6;gene=NS6
+sample	.	gene	start	end	.	+	.	ID=NS7-gene;ID=NS7;gene=NS7
+sample	.	gene	start	end	.	+	.	ID=ORF1a-gene;ID=ORF1a;gene=ORF1a
+sample	.	gene	start	end	.	+	.	ID=ORF1ab-gene;ID=ORF1ab;gene=ORF1ab
+sample	.	gene	start	end	.	+	.	ID=S-gene;ID=S;gene=S
+sample	.	CDS	start	end	.	+	.	ID=E-cds;ID=E CDS;Parent=E-gene
+sample	.	CDS	start	end	.	+	.	ID=M-cds;ID=M CDS;Parent=M-gene
+sample	.	CDS	start	end	.	+	.	ID=N-cds;ID=N CDS;Parent=N-gene
+sample	.	CDS	start	end	.	+	.	ID=NS6-cds;ID=NS6 CDS;Parent=NS6-gene
+sample	.	CDS	start	end	.	+	.	ID=NS7-cds;ID=NS7 CDS;Parent=NS7-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF1a-cds;ID=ORF1a CDS;Parent=ORF1a-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF1ab-cds;ID=ORF1ab CDS;Parent=ORF1ab-gene
+sample	.	CDS	start	end	.	+	.	ID=S-cds;ID=S CDS;Parent=S-gene

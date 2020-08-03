@@ -1,0 +1,15 @@
+##gff-version 3
+sample	.	mat_peptide	start	end	.	+	.	ID=C;Name=C;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=E0;Name=E0;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=E1;Name=E1;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=E2;Name=E2;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=N-Pro;Name=N-Pro;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=NS2;Name=NS2;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=NS3;Name=NS3;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=NS4A;Name=NS4A;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=NS4B;Name=NS4B;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=NS5A;Name=NS5A;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=NS5B;Name=NS5B;Parent=polyprotein-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=p7;Name=p7;Parent=polyprotein-gene
+sample	.	gene	start	end	.	+	.	ID=polyprotein-gene;ID=polyprotein;gene=polyprotein
+sample	.	CDS	start	end	.	+	.	ID=polyprotein-cds;ID=polyprotein CDS;Parent=polyprotein-gene

@@ -1,0 +1,34 @@
+##gff-version 3
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp10;Name=nsp10;Parent=ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp11;Name=nsp11;Parent=ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp12;Name=nsp12;Parent=ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp1alpha;Name=nsp1alpha;Parent=ORF1a-gene,ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp1beta;Name=nsp1beta;Parent=ORF1a-gene,ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp2;Name=nsp2;Parent=ORF1a-gene,ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp3;Name=nsp3;Parent=ORF1a-gene,ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp4;Name=nsp4;Parent=ORF1a-gene,ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp5;Name=nsp5;Parent=ORF1a-gene,ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp6;Name=nsp6;Parent=ORF1a-gene,ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp7;Name=nsp7;Parent=ORF1a-gene,ORF1ab-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp8;Name=nsp8;Parent=ORF1a-gene
+sample	.	mat_peptide	start	end	.	+	.	ID=nsp9;Name=nsp9;Parent=ORF1ab-gene
+sample	.	gene	start	end	.	+	.	ID=ORF1a-gene;ID=ORF1a;gene=ORF1a
+sample	.	gene	start	end	.	+	.	ID=ORF1ab-gene;ID=ORF1ab;gene=ORF1ab
+sample	.	gene	start	end	.	+	.	ID=ORF2-gene;ID=ORF2;gene=ORF2
+sample	.	gene	start	end	.	+	.	ID=ORF2b-gene;ID=ORF2b;gene=ORF2b
+sample	.	gene	start	end	.	+	.	ID=ORF3-gene;ID=ORF3;gene=ORF3
+sample	.	gene	start	end	.	+	.	ID=ORF4-gene;ID=ORF4;gene=ORF4
+sample	.	gene	start	end	.	+	.	ID=ORF5-gene;ID=ORF5;gene=ORF5
+sample	.	gene	start	end	.	+	.	ID=ORF5a-gene;ID=ORF5a;gene=ORF5a
+sample	.	gene	start	end	.	+	.	ID=ORF6-gene;ID=ORF6;gene=ORF6
+sample	.	gene	start	end	.	+	.	ID=ORF7-gene;ID=ORF7;gene=ORF7
+sample	.	CDS	start	end	.	+	.	ID=ORF1a-cds;ID=ORF1a CDS;Parent=ORF1a-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF1ab-cds;ID=ORF1ab CDS;Parent=ORF1ab-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF2-cds;ID=ORF2 CDS;Parent=ORF2-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF2b-cds;ID=ORF2b CDS;Parent=ORF2b-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF3-cds;ID=ORF3 CDS;Parent=ORF3-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF4-cds;ID=ORF4 CDS;Parent=ORF4-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF5-cds;ID=ORF5 CDS;Parent=ORF5-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF5a-cds;ID=ORF5a CDS;Parent=ORF5a-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF6-cds;ID=ORF6 CDS;Parent=ORF6-gene
+sample	.	CDS	start	end	.	+	.	ID=ORF7-cds;ID=ORF7 CDS;Parent=ORF7-gene
