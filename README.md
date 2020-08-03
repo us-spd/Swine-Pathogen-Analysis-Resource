@@ -5,7 +5,7 @@ SPAR offers high accuracy sequence annotating based on custom built multiple seq
 
 Comparable annotation pipelines consist of using BLAST to identify highly similar parent sequences. Following pairwise alignment, annotations from the parent sequence/s are transfered to the query. By comparison, these methods are generally faster and sufficiently accurate when a large reference database is available. In the absence of  similar comparison sequences, HMM profile alignment is a good alternative to pairwise alignment that pools available information to maximize alignment accuracy.
 
-An additional SPAR script assigns Restriction Fragment Length Polymorphism (RFLP) patterns to classify type 2 Porcine reproductive and respiratory syndrome virus (PRRSV). RFLP assignment is flexible; HMM profile alignment is used to compensate for indels in the query sequence that would impede pattern determination. No other comparable public resource is known.
+An additional SPAR script assigns restriction fragment length polymorphism (RFLP) patterns to classify type 2 Porcine reproductive and respiratory syndrome virus (PRRSV). RFLP assignment is flexible; HMM profile alignment is used to compensate for indels in the query sequence that would impede pattern determination. No other comparable public resource is known.
 
 
 ## Setup
@@ -30,9 +30,9 @@ Manually modify sequence_annotate.py
 ## Usage examples
 
 ```sh
-python3 sequence_annotate.py in > out
+python3 sequence_annotate.py input > output
 ```
-**OPTIONAL ARGUMENTS**<br />
+**Optional Arguments**<br />
 <pre>-h or -help
   Print USAGE, DESCRIPTION and ARGUMENTS
 -organism=<Organisms>
@@ -41,17 +41,17 @@ python3 sequence_annotate.py in > out
   Input FASTA file name
 -out=<Output_File>
   Output file name
--out\_format=<Output_Format>
+-out_format=<Output_Format>
   Output file format (gff3)</pre>
   
 **Note:** The *-organism* argument is used to specify the possible species identity for any sequence within the input FASTA file. Identification is based solely on BLAST similarity score. Valid organism options include Classical swine fever virus (CSFV), Foot-and-mouth disease virus (FMDV), Porcine deltacoronavirus (PDCoV), Porcine epidemic diarrhea virus (PEDV), PRRSV1, PRRSV2, and Senecavirus A (SVA). Currently, annotating is limited to single-stranded RNA viruses.
 
-Additional pathogens may be added by creating a pathway under the requirements directory with the following structure: organism\_abbreviation/hmm\_profiles/msa_save. Add nucleotide MSA templates in FASTA file format to the msa\_save directory. Templates can be representative of virtually any kind of continuous genomic feature that can be translated into an amino acid sequence. If a genomic feature contains a translational frameshift, python code will need to be directly modified. Please contact me for assistance. Once the necessary required templates have been provided, running the script for the first time will initiate a build process.
+Additional pathogens may be added by creating a pathway under the requirements directory with the following structure: organism\_abbreviation/hmm\_profiles/msa_save. Add nucleotide MSA templates in FASTA file format to the msa\_save directory. Templates can be representative of virtually any kind of continuous genomic feature that can be translated into an amino acid sequence. If a genomic feature contains a translational frameshift, python code will need to be directly modified. Please contact me for assistance. Once the necessary required templates have been provided, running the script for the first time will initiate a build process.<br />
 
 ```sh
-python3 prrsv_orf5_RFLP.py in > out
+python3 prrsv_orf5_RFLP.py input > output
 ```
-**OPTIONAL ARGUMENTS**<br />
+**Optional Arguments**<br />
 <pre>-h or -help
   Print USAGE, DESCRIPTION and ARGUMENTS
 -in=<Input_File>

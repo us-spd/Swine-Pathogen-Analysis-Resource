@@ -63,7 +63,7 @@ def findRFLP(nucleotide_sequence, annotate_li2, require_full=True):
 if "prrsv_orf5_RFLP" in sys.argv[0]:
     if "-h" in sys.argv[1:] or "-help" in sys.argv[1:]:
         print("""USAGE
-  python3 prrsv_orf5_RFLP.py in > out
+  python3 prrsv_orf5_RFLP.py input > output
 
 OPTIONAL ARGUMENTS
  -h or -help

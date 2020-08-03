@@ -1332,7 +1332,7 @@ valid_output_format_str = ", ".join(valid_output_format_li)
 if "sequence_annotate" in sys.argv[0]:
     if "-h" in sys.argv[1:] or "-help" in sys.argv[1:]:
         print("""USAGE
-  python3 sequence_annotate.py in > out
+  python3 sequence_annotate.py input > output
 
 OPTIONAL ARGUMENTS
  -h or -help
