@@ -18,6 +18,7 @@ from Bio.SubsMat import MatrixInfo
 import shutil
 import sys
 import traceback
+from progress.bar import Bar
 
 #from time import time
 
@@ -99,12 +100,6 @@ valid_organism_li = [d for d in os.listdir(dir_path+"/required/") if os.path.isd
 def writeFASTA(output_filepath, read_fasta_li2):
     #create missing directories if path does not exist (requires bash)
     subprocess.call("mkdir -p "+re.sub("[^\/]*$", "", output_filepath), shell=True)
-    """
-    #may be useful if mkdir cannot be called
-    dir_li = output_filepath.split("/")[:-1]
-    dir_li = [("/").join(dir_li[:i+1]) for i, x in enumerate(dir_li)]
-    miss_dir_li = [x for x in dir_li if x != "" and not os.path.isdir(x)]
-    """
     write_file = open(output_filepath, "w")
     for x in range(len(read_fasta_li2[0])):
         write_file.write(">" + read_fasta_li2[0][x].replace(" ", "_") + "\n" + read_fasta_li2[1][x] + "\n")
@@ -134,7 +129,7 @@ def readFASTA(input_filepath):
 def mafftAlign(input_fasta, output_fasta):
     #uses bash to call mafft to perform a residue (nucleotide or amino acid) alignment
     mafft_output = re.sub("\.[^\.]*?$", "-mafft.fasta", input_fasta) #allows output_fasta to be the same as input_fasta
-    os_call = "mafft "+input_fasta+" > "+mafft_output
+    os_call = "mafft "+input_fasta+" > "+mafft_output+" 2>/dev/null"
     subprocess.call(os_call, shell=True)
     read_msa_li2 = readFASTA(mafft_output)
     read_msa_li2[1] = [x.upper() for x in read_msa_li2[1]] #force mafft sequence output to be uppercase (expected mafft format)
@@ -433,13 +428,6 @@ def checkMSA(organism, dir_path=dir_path):
         if ".fa" in file:
             read_fasta_li2 = readFASTA(input_nucleotide_msa_directory + "/" + file) #nucleotide
             read_fasta_li2[1] = [x.upper() for x in read_fasta_li2[1]]
-            """
-            consensus_str = ""
-            index = 0
-            for index in range(len(read_fasta_li2[1][0])):
-                column = [read_fasta_li2[1][x][index] for x in range(len(read_fasta_li2[1]))]
-                consensus_str += max(column, key=column.count)
-            """
             #location of modified residue/s for frameshift correction
             frameshift_li = [] #slide distance/direction, msa_save index, msa_build index (gaps removed)
             consensus_str = "".join([max([y[x] for y in read_fasta_li2[1]], key=[y[x] for y in read_fasta_li2[1]].count) for x in range(len(read_fasta_li2[1][0]))])
@@ -504,14 +492,15 @@ def checkMSA(organism, dir_path=dir_path):
                 
 ################################################################################
 
-def buildHmm(organism, dir_path=dir_path):    
+def buildHmm(organism, dir_path=dir_path):
+####redundancy - hmmbuild()
     #use hmmbuild to create hmm profiles (requires bash)
     target_dir = dir_path + "/required/" + organism + "/hmm_profiles/msa_build"
     build_dir = dir_path + "/required/" + organism + "/hmm_profiles/hmm_build"
     subprocess.call("mkdir -p "+build_dir, shell=True)
     target_file_li = [f for f in os.listdir(target_dir) if os.path.isfile(os.path.join(target_dir, f)) and ".fa" in f]
     for target_file in target_file_li:
-        os_call = "hmmbuild "+build_dir+"/"+re.findall("^[^.]*", target_file)[0]+".hmm "+target_dir+"/"+target_file+" > /dev/null"
+        os_call = "hmmbuild "+build_dir+"/"+re.findall("^[^.]*", target_file)[0]+".hmm "+target_dir+"/"+target_file+" > /dev/null 2>/dev/null"
         subprocess.call(os_call, shell=True)
         
 ################################################################################
@@ -620,22 +609,10 @@ def buildBlastdb(dir_path=dir_path):
             read_fasta_li2[1] = [x.replace("-", "") for x in read_fasta_li2[1]]
             len_li.append(len(read_fasta_li2[0]))
             read_fasta_li3.append(read_fasta_li2)
-    """
-        fasta_median_len = int(stats.median(len_li))
-        if min_median_len == None or fasta_median_len < min_median_len:
-            min_median_len = fasta_median_len
-    #avoid sampling bias with equal random sampling
-    for i, li2 in enumerate(read_fasta_li3):
-        if len(li2[0]) > min_median_len:
-            index_li = list(range(0, len(li2[0])))
-            sample_index_li = random.sample(index_li, min_median_len)
-            for n in range(2):
-                read_fasta_li3[i][n] = [li2[n][x] for x in sample_index_li]
-    """
     read_fasta_li2 = [[head for read_fasta_li2 in read_fasta_li3 for head in read_fasta_li2[0]], \
                       [seq for read_fasta_li2 in read_fasta_li3 for seq in read_fasta_li2[1]]]
     writeFASTA(blastdb_dir+"/blastdb.fasta", read_fasta_li2)
-    os_call = "makeblastdb -dbtype nucl -in "+blastdb_dir+"/blastdb.fasta"
+    os_call = "makeblastdb -dbtype nucl -in "+blastdb_dir+"/blastdb.fasta > /dev/null 2>/dev/null"
     subprocess.call(os_call, shell=True)
 
 ################################################################################   
@@ -732,12 +709,13 @@ class Annotate:
     ################################################################################
     
     def hmmbuild(self, segment_key, crop_msa_build_li):
+########redundancy - buildHmm()
         read_fasta_li2 = readFASTA(self.required_path+"/"+self.organism+"/hmm_profiles/msa_build/"+segment_key+".fasta")
         read_fasta_li2[1] = [x[crop_msa_build_li[0]:crop_msa_build_li[1]] for x in read_fasta_li2[1]]
         msa_build = self.temporary_path+"/crop.fasta"
         hmm_build = self.temporary_path+"/crop.hmm"
         writeFASTA(msa_build, read_fasta_li2)
-        os_call = "hmmbuild "+hmm_build+" "+msa_build+" > /dev/null"
+        os_call = "hmmbuild "+hmm_build+" "+msa_build+" > /dev/null 2>/dev/null"
         subprocess.call(os_call, shell=True)
         os.remove(msa_build)
         return(hmm_build) #remove hmm_build file after hmmalign
@@ -750,14 +728,11 @@ class Annotate:
         open_file = open(hmmalign_input, "w")
         open_file.write(">Sequence\n" + dna_segment_str)
         open_file.close()
-        os_call = "hmmalign "+hmm_build+" "+hmmalign_input
+        os_call = "hmmalign "+hmm_build+" "+hmmalign_input+" 2>/dev/null"
         read_str = subprocess.check_output(os_call, shell=True).decode("utf-8")
         os.remove(hmmalign_input)
         trim_sequence_str = "".join([x[8:].strip() for x in read_str.split("\n") if "Sequence" in x and "#" not in x])
         if force_match_end: #terminal ends are known to be matching
-############force align adjacent gap/lower
-            
-            
             #treatment for terminal ends
             #force fit condition: non-matching (by hmmalign) ends are re-defined as matching if enough nucleotides/gaps are available
             end_li = [re.findall("^[-a-z]*", trim_sequence_str)[0], re.findall("[-a-z]*$", trim_sequence_str)[0]]
@@ -767,14 +742,9 @@ class Annotate:
                 lower_count = len(end.replace("-", ""))
                 #add corrected ends to trim_sequence_str conditionally using multiplicative string logic
                 if gap_count > 0:
-#
                     #move misaligned residues to sides (easier to remove with end treatments)
                     trim_sequence_str = ("-"*(gap_count-lower_count) + end.replace("-", "")[:-gap_count] + end.replace("-", "")[-gap_count:].upper())*abs(i-1) + \
                     trim_sequence_str + (end.replace("-", "")[:gap_count].upper() + end.replace("-", "")[gap_count:] + ("-"*(gap_count-lower_count)))*i
-                    #move misaligned residues to center (harder to remove with end treatments)
-                    #trim_sequence_str = (end.replace("-", "")[-gap_count:].upper() + end.replace("-", "")[:-gap_count] + "-"*(gap_count-lower_count))*abs(i-1) + \
-                    #trim_sequence_str + (("-"*(gap_count-lower_count)) + end.replace("-", "")[gap_count:] + end.replace("-", "")[:gap_count].upper())*i
-#
         return(trim_sequence_str)
 
     ################################################################################
@@ -1049,19 +1019,24 @@ class Annotate:
         
 def continueMessage(input_value="Additional setup required. Continue? (y/n) ", \
                     response_y="You have selected to continue. Please wait.", \
-                    response_n="Process terminated."):
-    while True:
-        output = input(input_value)
-        if output.lower() == "y" or output.lower() == "yes":
-            if len(response_y) > 0: 
-                print(response_y, file=sys.stderr)
-            return(True)
-        elif output.lower() == "n" or output.lower() == "no":
-            if len(response_n) > 0: 
-                print(response_n, file=sys.stderr)
-            return()
-        else:
-            print("Invalid response.", file=sys.stderr)  
+                    response_n="Process terminated."):        
+    old_stdout = sys.stdout 
+    try:
+        sys.stdout = sys.stderr
+        while True:
+            output = input(input_value)
+            if output.lower() == "y" or output.lower() == "yes":
+                if len(response_y) > 0: 
+                    print(response_y)
+                return(True)
+            elif output.lower() == "n" or output.lower() == "no":
+                if len(response_n) > 0: 
+                    print(response_n)
+                return()
+            else:
+                print("Invalid response.")  
+    finally:
+        sys.stdout = old_stdout
 
 ################################################################################
 
@@ -1099,33 +1074,6 @@ def organismDependencies(organism):
                     checkMSA(organism, dir_path)
                 if len([x for x in msa_save_li if x not in hmm_build_li]) != 0:
                     buildHmm(organism, dir_path)
-                """
-                if len([x for x in msa_save_li if x not in protein_msa_li]) != 0:
-                    #manually check protein MSAs, removing suspect recombinant/mutant sequences
-                    #nucleotide hmm profile alignments more resilient to poor alignment and do not require similar treatment
-                    exclude_di2 = { "PRRSV1": {}, #"ORF1ab":["A26843"], "nsp11":["A26843"]},
-                                    "PRRSV2": {},
-                                    "PEDV": {"ORF4":["KX580953"]},
-                                    "SVA": {"2C":["KX173339"]},
-                                    "CSFV": {"E0":["HI516623"],
-                                             "E1":["HI516623"],
-                                             "NS5B":["LC016722"]},
-                                    "FMDV": {"2A":["MG372731", "AY304994"],
-                                             "3B3":["MH426555"],
-                                             "L":["DQ409183", "DQ409186", "DQ409189"]},
-                                    "PDCoV": {} }
-                    for key in exclude_di2[organism]:
-                        protein_msa_path = dir_path+"/required/"+organism+"/protein/msa/"+key+".fasta"
-                        read_fasta_li2 = readFASTA(protein_msa_path)
-                        for accession in exclude_di2[organism][key]:
-                            for head_index, head in enumerate(read_fasta_li2[0]):
-                                if accession in head:
-                                    read_fasta_li2[0] = read_fasta_li2[0][:head_index] + read_fasta_li2[0][head_index+1:]
-                                    read_fasta_li2[1] = read_fasta_li2[1][:head_index] + read_fasta_li2[1][head_index+1:]
-                        #may need to re-align instead of simply removing excess gaps
-                        read_fasta_li2[1] = removeColumnGap(read_fasta_li2[1], 1)[0]
-                        writeFASTA(protein_msa_path, read_fasta_li2)
-                """
                 if len([x for x in msa_save_li if x not in cropped_regex_json]) != 0:
                     regexSelect(dir_path+"/required/"+organism+"/protein", cropped_regex_json)
                 if not os.path.isfile(dir_path+"/required/"+organism+"/gff3/template.gff3"):
@@ -1155,7 +1103,7 @@ def annotateFASTA(input_organism_li, read_fasta_li2, choose_match_li=[]):
     else:
         #check blast database
         blastdb = dir_path+"/required/blastdb/blastdb.fasta"
-        os_call = "blastdbcmd -info -db "+blastdb+" > /dev/null"
+        os_call = "blastdbcmd -info -db "+blastdb+" > /dev/null 2>/dev/null"
         check_blastdb_li = [subprocess.call(os_call.replace(".fasta", ""), shell=True), subprocess.call(os_call, shell=True)]
         if "blastn" in required_program_li and 0 not in check_blastdb_li and continueMessage(input_value="BLAST database must be constructed. Continue? (y/n) ", \
                                                                                              response_n="Not an optional step. Process terminated."):
@@ -1182,10 +1130,12 @@ def annotateFASTA(input_organism_li, read_fasta_li2, choose_match_li=[]):
                 fasta_di = {} #track original FASTA order
                 if len(input_organism_li) > 1:
                     if "blastn" in required_program_li:
+                        print("Identifying species for "+str(len(read_fasta_li2[1]))+" sequences", file=sys.stderr)
+                        bar = Bar("Progress", fill='#', suffix='%(percent)d%%', max=len(read_fasta_li2[1])) #track progress with bar visual
                         for index, sequence in enumerate(read_fasta_li2[1]):
                             writeFASTA(temp_dir+"/blast_in.fasta", [[str(index)], [sequence.replace("-", "")]])
 ############################blastn call/interpretation is largely reliant upon default behaviors; may require customized options
-                            os_call = "blastn -db "+blastdb +" -query "+temp_dir+"/blast_in.fasta -outfmt 6 | awk -F'\t' '{print $2}' | awk -F'--' '{print $NF}' > "+temp_dir+"/blast_out.txt"
+                            os_call = "blastn -db "+blastdb +" -query "+temp_dir+"/blast_in.fasta -outfmt 6 | awk -F'\t' '{print $2}' | awk -F'--' '{print $NF}' > "+temp_dir+"/blast_out.txt 2>/dev/null"
                             subprocess.call(os_call, shell=True)
                             with open(temp_dir+"/blast_out.txt") as blast_out: # Use file to refer to the file object
                                 read_out = blast_out.read().split("\n")[:-1] #ignore last newline character
@@ -1197,18 +1147,30 @@ def annotateFASTA(input_organism_li, read_fasta_li2, choose_match_li=[]):
                                         if max_key_count[0] not in fasta_di:
                                             fasta_di[max_key_count[0]] = []
                                         fasta_di[max_key_count[0]].append([index, sequence])
+                            bar.next()
+                        bar.finish()
                 elif len(input_organism_li) == 1:
                     fasta_di[input_organism_li[0]] = [[index, sequence] for index, sequence in enumerate(read_fasta_li2[1])]
+                sum_len = sum([len(fasta_di[x]) for x in fasta_di])
+                blast_complete_str = "Species identification complete"
+                if len(read_fasta_li2[1]) > sum_len:
+                    blast_complete_str += "("+str(len(read_fasta_li2[1])-sum_len)+" sequences could not be identified)"
+                print(blast_complete_str, file=sys.stderr)
+                print("Annotating "+str(sum_len)+" sequences", file=sys.stderr)
+                bar = Bar("Progress", fill='#', suffix='%(percent)d%%', max=sum_len) #track progress with bar visual
                 #annotate by organism
                 for organism in fasta_di:
                     annotate = Annotate(organism, temp_dir)
                     choose_match_li = [x for x in choose_match_li if x in annotate.total_cds]
                     if choose_match_li == []:
-                        choose_match_li = annotate.total_cds
+                        choose_match_li = annotate.total_cds        
                     for di_li in fasta_di[organism]: #use original FASTA order
                         total_annotate_li2 = annotate.annotateSequence(di_li[1], choose_match_li)
                         if len(total_annotate_li2) > 0:
                             annotate_li4[di_li[0]] = [organism, total_annotate_li2]
+                        bar.next()
+                    bar.finish()
+                print("Annotation process complete", file=sys.stderr)
             except:
                 traceback.print_exc(file=sys.stderr)
                 print(read_fasta_li2[0], file=sys.stderr) #?
@@ -1252,7 +1214,7 @@ def outputGFF(read_fasta_li2, annotate_li4):
                     if len(re.findall("[^a-zA-Z0-9]"+feature+"[^a-zA-Z0-9]", gff_template_li[-1].replace(find_parent, ""))) > 0: #regex should be specific enough for single character feature names
                         #apply feature annotations to gff file line
                         gff_template_li[0] = read_fasta_li2[0][fasta_index]
-                        gff_template_li[1] = "United States Swine Pathogen Database"
+                        gff_template_li[1] = "Swine Pathogen Analysis Resource (SPAR)"
                         #edit/modify note
                         if len(annotate_li[3]) > 0:
                             translational_frameshift_li = [int(x.strip()) for x in annotate_li[3].split(",")] #assumes maximum of one translational frameshift per genomic feature
@@ -1347,16 +1309,16 @@ OPTIONAL ARGUMENTS
    Output file format ("""+", ".join(valid_output_format_li)+""")
 
 DESCRIPTION
-  Virus genome annotation package, last updated July 30th 2020""", file=sys.stderr)
+  Swine Pathogen Analysis Resource (SPAR), last updated August 6th 2020""", file=sys.stderr)
         
     input_organism_li2 = [x[10:].split(",") for x in sys.argv[1:] if x[:10] == "-organism="]
     input_organism_li = list(set([y for x in input_organism_li2 for y in x]))  
-    input_fasta_li = [f for f in [x[4:] for x in sys.argv[1:] if x[:4] == "-in="] if os.path.isfile(f) and ".fa" in f]
+    input_fasta_li = [f for f in [re.sub("^-in=", "", x) for x in sys.argv[1:]] if os.path.isfile(f) and ".fa" in f]
     output_fasta_li = [f for f in [x[5:] for x in sys.argv[1:] if x[:5] == "-out="] if os.path.isfile(f) and ".fa" in f]
     output_format = [x[12:] for x in sys.argv[1:] if x[:12] == "-out_format="]
     if len(input_fasta_li) > 0:
         if len(output_fasta_li) > 1: 
-            print("Only one output file is supported. Please make revisions and try again.", file=sys.stderr)
+            print("Only one output file is supported (multiple given). Please make revisions and try again.", file=sys.stderr)
         elif len(output_format) > 1:
             print("Only one output file format is supported. Please make revisions and try again.", file=sys.stderr)
         elif len([f for f in output_format if f not in valid_output_format_li]) == 1:
@@ -1369,11 +1331,14 @@ DESCRIPTION
                 read_fasta_li2[0] += temp_read_fasta_li2[0]
                 read_fasta_li2[1] += temp_read_fasta_li2[1]
             annotate_li4 = annotateFASTA(input_organism_li, read_fasta_li2)
-            output_gff3 = outputGFF(read_fasta_li2, annotate_li4)
-            if len(output_fasta_li) == 1:
-                write_file = open(output_fasta_li[0], "w")
-                write_file.write(output_gff3)
-                write_file.close()
-            else:
-                print(output_gff3)
-
+            if len([x for x in annotate_li4 if x != []]) > 0:
+                output_gff3 = outputGFF(read_fasta_li2, annotate_li4)
+                if len(output_fasta_li) == 1:
+                    write_file = open(output_fasta_li[0], "w")
+                    write_file.write(output_gff3)
+                    write_file.close()
+                else:
+                    print(output_gff3)
+    else:
+        print("Input file could not be found. Please make revisions and try again.", file=sys.stderr)
+        

@@ -10,6 +10,7 @@ import subprocess
 from sequence_annotate import *
 import sys
 import traceback
+from progress.bar import Bar
 
 ################################################################################
 ################################################################################
@@ -76,14 +77,14 @@ OPTIONAL ARGUMENTS
    Only assign RFLP pattern to input sequences that are complete (default=True)
  
 DESCRIPTION
-  Virus genome annotation package, last updated July 30th 2020""", file=sys.stderr)
+  Swine Pathogen Analysis Resource (SPAR), last updated August 6th 2020""", file=sys.stderr)
         
-    input_fasta_li = [f for f in [x[4:] for x in sys.argv[1:] if x[:4] == "-in="] if os.path.isfile(f) and ".fa" in f]
+    input_fasta_li = [f for f in [re.sub("^-in=", "", x) for x in sys.argv[1:]] if os.path.isfile(f) and ".fa" in f]
     output_fasta_li = [f for f in [x[5:] for x in sys.argv[1:] if x[:5] == "-out="] if os.path.isfile(f) and ".fa" in f]
     require_full = [y[0] for y in [re.findall("^\-require_full\=", "", x) for x in sys.argv[1:]] if y != []]
     if len(input_fasta_li) > 0:
-        if len(output_fasta_li) > 1: 
-            print("Only one output file is supported. Please make revisions and try again.", file=sys.stderr)
+        if len(output_fasta_li) > 1:
+            print("Only one output file is supported (multiple given). Please make revisions and try again.", file=sys.stderr)
         else:
             read_fasta_li2 = [[], []]
             for fasta in input_fasta_li:
@@ -94,17 +95,23 @@ DESCRIPTION
             require_full = True
             if len(require_full) == 1 and require_full[0] == "f":
                 require_full = False
+            print("Assigning RFLP patterns to "+str(len(annotate_li4))+" sequences", file=sys.stderr)
+            bar = Bar("Progress", fill='#', suffix='%(percent)d%%', max=len(annotate_li4)) #track progress with bar visual
             for fasta_index, annotate_li3 in enumerate(annotate_li4):
                 if len(annotate_li3) > 0 and annotate_li3[0] == "PRRSV2":
                     read_fasta_li2[0][fasta_index] += "/"+findRFLP(read_fasta_li2[1][fasta_index], annotate_li3[1], require_full)
                 else:
                     read_fasta_li2[0][fasta_index] += "/na" #invalid organism
-                    
+                bar.next()
+            bar.finish()
+            print("RFLP pattern assignment complete", file=sys.stderr)
             if len(output_fasta_li) == 1:
                 writeFASTA(output_fasta_li[0], read_fasta_li2)
             else:
                 for fasta_index, head in enumerate(read_fasta_li2[0]):
                     print(">"+head)
                     print(read_fasta_li2[1][fasta_index])
+    else:
+        print("Input file could not be found. Please make revisions and try again.", file=sys.stderr)
                 
             
